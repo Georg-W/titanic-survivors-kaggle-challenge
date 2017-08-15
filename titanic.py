@@ -66,7 +66,6 @@ test_dataset["Fare"].fillna(0, inplace=True)
 
 #p_class = tf.contrib.layers.sparse_column_with_keys(
 #  column_name="Pclass", keys=[1, 2, 3])
-# p_class = tf.contrib.layers.sparse_column_with_hash_bucket("Pclass", hash_bucket_size=1000)
 name = tf.contrib.layers.sparse_column_with_hash_bucket("Name", hash_bucket_size=1000)
 sex = tf.contrib.layers.sparse_column_with_keys(
   column_name="Sex", keys=["male", "female"])
@@ -75,7 +74,7 @@ cabin = tf.contrib.layers.sparse_column_with_hash_bucket("Cabin", hash_bucket_si
 embarked = tf.contrib.layers.sparse_column_with_keys(
   column_name="Embarked", keys=["C", "Q", "S"])
 
-
+#p_class = tf.contrib.layers.real_valued_column("Pclass", dtype=tf.int)
 passenger_id = tf.contrib.layers.real_valued_column("PassengerId")
 age = tf.contrib.layers.real_valued_column("Age")
 sibsp = tf.contrib.layers.real_valued_column("SibSp")
@@ -135,6 +134,8 @@ def pred_input_fn(df):
   #feature_cols = dict(categorical_cols.items()+continuous_cols.items())
   feature_cols = categorical_cols.copy()
   feature_cols.update(continuous_cols)
+  print("hey!!!!")
+  print(feature_cols)
   
   # Converts the label column into a constant Tensor.
   #label = tf.constant(df[LABEL_COLUMN].values)
@@ -152,8 +153,8 @@ def prediction_input_fn():
 
 model_dir = tempfile.mkdtemp()
 m = tf.contrib.learn.LinearClassifier(feature_columns=[
-  passenger_id, sibsp, parch, fare,
-  age, name, sex, ticket, cabin, embarked],
+  sibsp, parch,
+  age, sex, ticket],
       
       # p_class,
       
@@ -163,7 +164,7 @@ m = tf.contrib.learn.LinearClassifier(feature_columns=[
   #age],
   model_dir=model_dir)
 
-m.fit(input_fn=train_input_fn, steps=20000)
+m.fit(input_fn=train_input_fn, steps=25000)
 
 pred = m.predict(input_fn=prediction_input_fn)
 print(pred)
